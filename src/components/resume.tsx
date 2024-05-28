@@ -1,15 +1,18 @@
-interface resumeProps {
-    valorTotal: number
-    totalCredito: number
-    totalDebito: number
+// Resume.tsx
+import React from "react";
+
+interface ResumeProps {
+    valorTotal: number;
+    totalCredito: number;
+    totalDebito: number;
 }
 
-function resume({valorTotal: valorTotal, totalCredito: totalCredito, totalDebito: totalDebito}: resumeProps) {
+
+const Resume: React.FC<ResumeProps> = ({ valorTotal, totalCredito, totalDebito }) => {
 
     const formatCurrency = (value: number): string => {
         return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
       };
-      
 
     return (
         <div className="flex flex-wrap justify-center mt-10 -ml-32">
@@ -28,7 +31,7 @@ function resume({valorTotal: valorTotal, totalCredito: totalCredito, totalDebito
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default resume
+export default Resume;

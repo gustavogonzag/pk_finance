@@ -1,100 +1,105 @@
-import { useEffect, useState } from "react";
+// SessionAddContent.tsx
+import React, { useEffect, useState } from "react";
 import Resume from "./resume";
+import List from "./list";
+import { Registro } from "./type";
 
 function SessionAddContent() {
 
-    const [descricao, setDescricao] = useState<string>("");
-    const [data, setData] = useState<string>("");
-    const [valor, setValor] = useState<string>("");
-    const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [descricao, setDescricao] = useState<string>("");
+  const [data, setData] = useState<string>("");
+  const [valor, setValor] = useState<string>("");
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
-    const [valorTotal, setValorTotal] = useState<number>(0);
-    const [totalCredito, setTotalCredito] = useState<number>(0);
-    const [totalDebito, setTotalDebito] = useState<number>(0);
+  const [valorTotal, setValorTotal] = useState<number>(0);
+  const [totalCredito, setTotalCredito] = useState<number>(0);
+  const [totalDebito, setTotalDebito] = useState<number>(0);
+  const [registrosFinanceiros, setRegistrosFinanceiros] = useState<Registro[]>([]);
 
-    useEffect(() => {
-        const registrosFinanceiros = JSON.parse(localStorage.getItem('registrosFinanceiros') || '[]');
-        somaValor(registrosFinanceiros);
-    }, []);
+  useEffect(() => {
+    const registros = JSON.parse(localStorage.getItem('registrosFinanceiros') || '[]');
+    setRegistrosFinanceiros(registros);
+    somaValor(registros);
+  }, []);
 
-    const handleOptionChange = (option: string) => {
-        // Se o mesmo botão de rádio for clicado novamente, desmarque-o
-        setSelectedOption(selectedOption === option ? null : option);
+  const handleOptionChange = (option: string) => {
+    setSelectedOption(selectedOption === option ? null : option);
+  };
+
+  const clearFields = () => {
+    setDescricao("");
+    setData("");
+    setValor("");
+    setSelectedOption(null);
+  };
+
+  const handleAdd = () => {
+    const receita: Registro = {
+      descricao,
+      data,
+      valor,
+      selectedOption: selectedOption as 'credito' | 'debito'
     };
+    const updatedRegistros = [...registrosFinanceiros, receita];
+    setRegistrosFinanceiros(updatedRegistros);
+    addSaveStorage(updatedRegistros);
+    somaValor(updatedRegistros);
+  };
 
-    const clearFields = () => {
-        setDescricao("");
-        setData("");
-        setValor("");
-        setSelectedOption(null);
-    }
+  const somaValor = (registros: Registro[]) => {
+    let total = 0;
+    let totalCredito = 0;
+    let totalDebito = 0;
+    registros.forEach(registro => {
+      const valor = parseFloat(registro.valor);
+      total += valor;
+      if (registro.selectedOption === 'credito') {
+        totalCredito += valor;
+      } else if (registro.selectedOption === 'debito') {
+        totalDebito += valor;
+      }
+    });
+    setTotalCredito(totalCredito);
+    setTotalDebito(totalDebito);
+    setValorTotal(total);
+  };
 
-    const handleAdd = () => {
-        const receita = {
-            descricao: descricao,
-            data: data,
-            valor: valor,
-            selectedOption: selectedOption
-        }
-        const registrosFinanceiros = [
-            ...JSON.parse(localStorage.getItem('registrosFinanceiros') || '[]'),
-            receita
-        ]
-        addSaveStorage(registrosFinanceiros);
-        somaValor(registrosFinanceiros);
-    };
+  const addSaveStorage = (registros: Registro[]) => {
+    localStorage.setItem('registrosFinanceiros', JSON.stringify(registros));
+    clearFields();
+  };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const somaValor = (formData: string | any[] ) => {
-        let total = 0;
-        let totalCredito = 0;
-        let totalDebito = 0;
-        for (let i = 0; i < formData.length; i++) {
-            total += parseFloat(formData[i].valor);
-        }
+  const handleDelete = (index: number) => {
+    const updatedRegistros = registrosFinanceiros.filter((_, i) => i !== index);
+    setRegistrosFinanceiros(updatedRegistros);
+    localStorage.setItem('registrosFinanceiros', JSON.stringify(updatedRegistros));
+    somaValor(updatedRegistros);
+  };
 
-        for (let i = 0; i < formData.length; i++) {
-            if (formData[i].selectedOption === 'credito') {
-                totalCredito += parseFloat(formData[i].valor);
-            } else if (formData[i].selectedOption === 'debito') {
-                totalDebito += parseFloat(formData[i].valor);
-            }
-        }
-        setTotalCredito(totalCredito);
-        setTotalDebito(totalDebito);
-        setValorTotal(total);
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-    const addSaveStorage = (registrosFinanceiros: any) => {
-        localStorage.setItem('registrosFinanceiros', JSON.stringify(registrosFinanceiros));
-        clearFields();
-    }
-
-    return (
-        <>
-        <div className="flex flex-wrap justify-center mt-10">
-            <div className="flex flex-wrap justify-center items-center bg-[#242424] w-auto rounded-md gap-4 px-10 py-4">
-                <input className="p-2 rounded-md bg-gray-dark text-[#FFF]" placeholder="Digite aqui a descricão" type="text" onChange={(e) => setDescricao(e.target.value)} value={descricao} />
-                <input className="p-2 rounded-md  bg-gray-dark text-[#FFF]" type="date" onChange={(e) => setData(e.target.value)} value={data} />
-                <input className="p-2 w-24 rounded-md bg-gray-dark text-[#FFF]" placeholder="Valor" type="text" onChange={(e) => setValor(e.target.value)} value={valor} />
-                <div className="text-[#FFF]">
-                    <input className="mr-2" type="radio" name="credito" id="credito" checked={selectedOption === 'credito'}
-                        onChange={() => handleOptionChange('credito')} />
-                    Crédito
-                </div>
-                <div className="text-[#FFF]">
-                    <input className="mr-2" type="radio" name="debito" id="debito" checked={selectedOption === 'debito'}
-            onChange={() => handleOptionChange('debito')} />
-                    Débito
-                </div>
-                <button className="bg-orange rounded-md px-4 text-[#FFF] font-medium ml-4 w-36 h-11" onClick={handleAdd}>Adicionar</button>
-            </div>
+  return (
+    <>
+      <div className="flex flex-wrap justify-center mt-10">
+        <div className="flex flex-wrap justify-center items-center bg-[#242424] w-auto rounded-md gap-4 px-10 py-4">
+          <input className="p-2 rounded-md bg-gray-dark text-[#FFF]" placeholder="Digite aqui a descricão" type="text" onChange={(e) => setDescricao(e.target.value)} value={descricao} />
+          <input className="p-2 rounded-md bg-gray-dark text-[#FFF]" type="date" onChange={(e) => setData(e.target.value)} value={data} />
+          <input className="p-2 w-24 rounded-md bg-gray-dark text-[#FFF]" placeholder="Valor" type="text" onChange={(e) => setValor(e.target.value)} value={valor} />
+          <div className="text-[#FFF]">
+            <input className="mr-2" type="radio" name="credito" id="credito" checked={selectedOption === 'credito'}
+              onChange={() => handleOptionChange('credito')} />
+            Crédito
+          </div>
+          <div className="text-[#FFF]">
+            <input className="mr-2" type="radio" name="debito" id="debito" checked={selectedOption === 'debito'}
+              onChange={() => handleOptionChange('debito')} />
+            Débito
+          </div>
+          <button className="bg-orange rounded-md px-4 text-[#FFF] font-medium ml-4 w-36 h-11" onClick={handleAdd}>Adicionar</button>
         </div>
-        <Resume valorTotal={valorTotal} totalCredito={totalCredito} totalDebito={totalDebito}/>
-        </>
-        
-    )
+      </div>
+      <Resume valorTotal={valorTotal} totalCredito={totalCredito} totalDebito={totalDebito} />
+      <List registros={registrosFinanceiros} handleDelete={handleDelete} />
+    </>
+  );
 }
 
-export default SessionAddContent
+export default SessionAddContent;
