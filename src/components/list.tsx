@@ -1,6 +1,39 @@
+import { useEffect, useState } from "react";
 import { RiDeleteBin6Line } from "react-icons/ri";
 
-function list() {
+type Registro = {
+    descricao: string;
+    data: string;
+    valor: string;
+    selectedOption: 'credito' | 'debito';
+};
+
+function List() {
+
+    const [registros, setRegistros] = useState<Registro[]>([]);
+
+    useEffect(() => {
+        const registrosFinanceiros = JSON.parse(localStorage.getItem('registrosFinanceiros') || '[]');
+        if (registrosFinanceiros) {
+            setRegistros(registrosFinanceiros);
+        }
+    }, []);
+
+    if (registros.length === 0) {
+        return <td className="mt-10 text-center text-[#FFF]">Nenhum dado disponível</td>;
+    }
+
+    const handleDelete = (index: number) => {
+        const updatedData = registros.filter((_, i) => i !== index);
+        setRegistros(updatedData);
+        localStorage.setItem('registrosFinanceiros', JSON.stringify(updatedData));
+      };
+
+    const formatCurrency = (value: string) => {
+        const numberValue = parseFloat(value.replace(/[^\d.-]/g, ''));
+        return numberValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      };
+
     return (
         <div className="flex flex-wrap justify-center mt-10">
             <div>
@@ -18,33 +51,25 @@ function list() {
                         </tr>
                     </thead>
                     <tbody className="text-[#FFF]">
-                        <tr>
-                            <td>27/05/2024</td>
-                            <td>2.500,35</td>
-                            <td>Parcela da placa de video 8060</td>
-                            <td>Débito</td>
-                            <td><RiDeleteBin6Line className="cursor-pointer"/></td>
-                        </tr>
-                        <tr>
-                            <td>27/05/2024</td>
-                            <td>2.500,35</td>
-                            <td>Parcela da placa de video 8060</td>
-                            <td>Débito</td>
-                            <td><RiDeleteBin6Line className="cursor-pointer"/></td>
-                        </tr>
-                        <tr>
-                            <td>27/05/2024</td>
-                            <td>2.500,35</td>
-                            <td>Parcela da placa de video 8060</td>
-                            <td>Débito</td>
-                            <td><RiDeleteBin6Line className="cursor-pointer"/></td>
-                        </tr>
+                        {registros.map((data, index) => (
+                            <tr key={index}>
+                                <td>{data.data}</td>
+                                <td>{formatCurrency(data.valor)}</td>
+                                <td>{data.descricao}</td>
+                                <td>{data.selectedOption === 'debito' ? 'Débito' : 'Crédito'}</td>
+                                <td>
+                                    <RiDeleteBin6Line
+                                        className="cursor-pointer"
+                                        onClick={() => handleDelete(index)}
+                                    />
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
-
                 </table>
             </div>
         </div>
     )
 }
 
-export default list
+export default List
