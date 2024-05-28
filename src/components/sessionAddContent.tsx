@@ -12,6 +12,13 @@ function SessionAddContent() {
         setSelectedOption(selectedOption === option ? null : option);
     };
 
+    const clearFields = () => {
+        setDescricao("");
+        setData("");
+        setValor("");
+        setSelectedOption(null);
+    }
+
     const handleAdd = (event: { preventDefault: () => void; }) => {
         event.preventDefault();
         const receita = {
@@ -29,9 +36,9 @@ function SessionAddContent() {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
     const addSaveStorage = (registrosFinanceiros: any) => {
-
         localStorage.setItem('registrosFinanceiros', JSON.stringify(registrosFinanceiros));
         console.log(registrosFinanceiros);
+        clearFields();
     }
 
     return (
