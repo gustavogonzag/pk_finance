@@ -1,5 +1,5 @@
 // SessionAddContent.tsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Resume from "./resume";
 import List from "./list";
 import { Registro } from "./type";
