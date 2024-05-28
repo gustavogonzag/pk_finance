@@ -13,7 +13,7 @@ function resume({valorTotal: valorTotal, totalCredito: totalCredito, totalDebito
 
     return (
         <div className="flex flex-wrap justify-center mt-10 -ml-32">
-            <div className="flex flex-row gap-8 -ml-96">
+            <div className="flex flex-wrap gap-8 -ml-96">
                 <div>
                     <span className="text-gray-light font-medium">Total <br /></span>
                     <span className="text-[#FFF] font-medium">{formatCurrency(valorTotal)}</span>

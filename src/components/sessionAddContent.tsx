@@ -73,7 +73,7 @@ function SessionAddContent() {
 
     return (
         <>
-        <div className="flex justify-center mt-10">
+        <div className="flex flex-wrap justify-center mt-10">
             <div className="flex flex-wrap justify-center items-center bg-[#242424] w-auto rounded-md gap-4 px-10 py-4">
                 <input className="p-2 rounded-md bg-gray-dark text-[#FFF]" placeholder="Digite aqui a descricão" type="text" onChange={(e) => setDescricao(e.target.value)} value={descricao} />
                 <input className="p-2 rounded-md  bg-gray-dark text-[#FFF]" type="date" onChange={(e) => setData(e.target.value)} value={data} />
