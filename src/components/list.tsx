@@ -20,7 +20,7 @@ function List() {
     }, []);
 
     if (registros.length === 0) {
-        return <div className="mt-10 text-center text-[#FFF]">Nenhum dado disponível</div>;
+        return <td className="mt-10 text-center text-[#FFF]">Nenhum dado disponível</td>;
     }
 
     const handleDelete = (index: number) => {

@@ -1,6 +1,6 @@
 import Head from "./components/head";
+import List from "./components/list";
 import SessionAddContent from "./components/sessionAddContent";
-import List from './components/list';
 
 export default function App() {
   return (
