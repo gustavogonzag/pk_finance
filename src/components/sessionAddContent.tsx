@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Resume from "./resume";
 
 function SessionAddContent() {
 
@@ -6,6 +7,15 @@ function SessionAddContent() {
     const [data, setData] = useState<string>("");
     const [valor, setValor] = useState<string>("");
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
+
+    const [valorTotal, setValorTotal] = useState<number>(0);
+    const [totalCredito, setTotalCredito] = useState<number>(0);
+    const [totalDebito, setTotalDebito] = useState<number>(0);
+
+    useEffect(() => {
+        const registrosFinanceiros = JSON.parse(localStorage.getItem('registrosFinanceiros') || '[]');
+        somaValor(registrosFinanceiros);
+    }, []);
 
     const handleOptionChange = (option: string) => {
         // Se o mesmo botão de rádio for clicado novamente, desmarque-o
@@ -19,8 +29,7 @@ function SessionAddContent() {
         setSelectedOption(null);
     }
 
-    const handleAdd = (event: { preventDefault: () => void; }) => {
-        event.preventDefault();
+    const handleAdd = () => {
         const receita = {
             descricao: descricao,
             data: data,
@@ -32,16 +41,38 @@ function SessionAddContent() {
             receita
         ]
         addSaveStorage(registrosFinanceiros);
+        somaValor(registrosFinanceiros);
     };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const somaValor = (formData: string | any[] ) => {
+        let total = 0;
+        let totalCredito = 0;
+        let totalDebito = 0;
+        for (let i = 0; i < formData.length; i++) {
+            total += parseFloat(formData[i].valor);
+        }
+
+        for (let i = 0; i < formData.length; i++) {
+            if (formData[i].selectedOption === 'credito') {
+                totalCredito += parseFloat(formData[i].valor);
+            } else if (formData[i].selectedOption === 'debito') {
+                totalDebito += parseFloat(formData[i].valor);
+            }
+        }
+        setTotalCredito(totalCredito);
+        setTotalDebito(totalDebito);
+        setValorTotal(total);
+    }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
     const addSaveStorage = (registrosFinanceiros: any) => {
         localStorage.setItem('registrosFinanceiros', JSON.stringify(registrosFinanceiros));
-        console.log(registrosFinanceiros);
         clearFields();
     }
 
     return (
+        <>
         <div className="flex justify-center mt-10">
             <div className="flex flex-wrap justify-center items-center bg-[#242424] w-auto rounded-md gap-4 px-10 py-4">
                 <input className="p-2 rounded-md bg-gray-dark text-[#FFF]" placeholder="Digite aqui a descricão" type="text" onChange={(e) => setDescricao(e.target.value)} value={descricao} />
@@ -60,6 +91,9 @@ function SessionAddContent() {
                 <button className="bg-orange rounded-md px-4 text-[#FFF] font-medium ml-4 w-36 h-11" onClick={handleAdd}>Adicionar</button>
             </div>
         </div>
+        <Resume valorTotal={valorTotal} totalCredito={totalCredito} totalDebito={totalDebito}/>
+        </>
+        
     )
 }
 
