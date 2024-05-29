@@ -14,6 +14,7 @@ function SessionAddContent() {
   const [valorTotal, setValorTotal] = useState<number>(0);
   const [totalCredito, setTotalCredito] = useState<number>(0);
   const [totalDebito, setTotalDebito] = useState<number>(0);
+  const [saldo, setSaldo] = useState<number>(0);
   const [registrosFinanceiros, setRegistrosFinanceiros] = useState<Registro[]>([]);
 
   useEffect(() => {
@@ -62,6 +63,7 @@ function SessionAddContent() {
     setTotalCredito(totalCredito);
     setTotalDebito(totalDebito);
     setValorTotal(total);
+    setSaldo(totalCredito - totalDebito);
   };
 
   const addSaveStorage = (registros: Registro[]) => {
@@ -96,7 +98,7 @@ function SessionAddContent() {
           <button className="bg-orange rounded-md px-4 text-[#FFF] font-medium ml-4 w-36 h-11" onClick={handleAdd}>Adicionar</button>
         </div>
       </div>
-      <Resume valorTotal={valorTotal} totalCredito={totalCredito} totalDebito={totalDebito} />
+      <Resume valorTotal={valorTotal} totalCredito={totalCredito} totalDebito={totalDebito} saldo={saldo} />
       <List registros={registrosFinanceiros} handleDelete={handleDelete} />
     </>
   );
