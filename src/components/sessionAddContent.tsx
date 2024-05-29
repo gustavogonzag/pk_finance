@@ -4,10 +4,18 @@ import Resume from "./resume";
 import List from "./list";
 import { Registro } from "./type";
 
+const getCurrentDate = (): string => {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 function SessionAddContent() {
 
   const [descricao, setDescricao] = useState<string>("");
-  const [data, setData] = useState<string>("");
+  const [data, setData] = useState<string>(getCurrentDate());
   const [valor, setValor] = useState<string>("");
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
 
