@@ -11,8 +11,15 @@ interface ListProps {
 const List: React.FC<ListProps> = ({ registros, handleDelete }) => {
 
   const formatCurrency = (value: string) => {
-    const numberValue = parseFloat(value.replace(/[^\d.-]/g, ''));
-    return numberValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    let numberValue = value.replace(/[^\d.,-]/g, '');
+
+    if (numberValue.indexOf('.') === -1) {
+        numberValue = numberValue.replace(',', '.');
+    }
+
+    const currentValue: number = parseFloat(numberValue);
+
+    return currentValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   };
 
   return (
